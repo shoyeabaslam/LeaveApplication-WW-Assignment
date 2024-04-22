@@ -1,0 +1,1 @@
+Scaffold-DbContext "Data Source=DESKTOP-PCUNCE6;database=leavemanagementsystem;Integrated Security=True; Trust Server Certificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models

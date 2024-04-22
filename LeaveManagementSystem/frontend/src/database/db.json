@@ -1,0 +1,14 @@
+{
+  "Employees": [
+    { "EMP_ID": 1000, "EMP_NAME": "John Doe", "EMP_EMAIL": "john@example.com", "EMP_PASS": "password123", "TOTAL_LEAVE": 20 },
+    { "EMP_ID": 1001, "EMP_NAME": "Alice Smith", "EMP_EMAIL": "alice@example.com", "EMP_PASS": "pass456", "TOTAL_LEAVE": 20 }
+  ],
+  "Managers": [
+    { "M_NAME": "Manager 1", "M_EMAIL": "manager1@example.com", "M_PASS": "managerpass", "ISADMIN": true },
+    { "M_NAME": "Manager 2", "M_EMAIL": "manager2@example.com", "M_PASS": "managerpass", "ISADMIN": false }
+  ],
+  "LeaveRequests": [
+    { "RequestID": 1, "EmpId": 1000, "ManagerEmail": "manager1@example.com", "FromDate": "2024-04-20", "ToDate": "2024-04-22", "TotalDays": 3, "Reason": "Family vacation", "LeaveStatus": "Approved" },
+    { "RequestID": 2, "EmpId": 1001, "ManagerEmail": "manager2@example.com", "FromDate": "2024-05-05", "ToDate": "2024-05-07", "TotalDays": 3, "Reason": "Personal reasons", "LeaveStatus": "Pending" }
+  ]
+}
