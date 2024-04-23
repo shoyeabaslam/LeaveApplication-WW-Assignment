@@ -1,8 +1,8 @@
-import { FaRegEdit } from "react-icons/fa";
+import { FaRegEdit, FaSort } from "react-icons/fa";
 import { MdCancelPresentation } from "react-icons/md";
-import { Status } from '../types/Enum'
-import { FC } from "react";
-import { LeaveRequestType } from "../types/LeaveRequestType";
+import { SortingTypes, Status } from '../types/Enum'
+import { FC, useState } from "react";
+import { LeaveRequestType, LeaveType } from "../types/LeaveRequestType";
 
 const colors = {
     'Pending': 'text-orange-500',
@@ -11,9 +11,13 @@ const colors = {
 
 }
 
-const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleCancleLeaveRequest, handleUpdateLeaveRequest, currentStatus, searchTerms }) => {
+const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleCancleLeaveRequest, handleUpdateLeaveRequest, currentStatus, searchTerms,setLeaveRequest }) => {
 
-  //filtering the data
+    const [isFromSorting,setIsFromSorting] = useState(false);
+    const [isToSorting,setIsToSorting] = useState(false);
+    const [isTotalDaysSorting,setIsTotalDaysSorting] = useState(false)
+
+    //filtering the data
     const filterLeaveRequests = leaveRequests.filter((item) => {
         const statusMatches = item.status === currentStatus;
         const searchTermNotEmpty = searchTerms.length !== 0;
@@ -30,17 +34,77 @@ const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleC
         return statusMatches && (searchTermNotEmpty ? matchesSearchTerm : true);
     });
 
+    
 
+    //sorting based on the dates
+    function handleSorting(isTypeOf:number): void {
+       if(isTypeOf === SortingTypes.FromDates){
+        setLeaveRequest((prev:LeaveType[])=>{
+            const sortedArray = [...prev]
+            sortedArray.sort((a,b)=>{
+                const d1 = new Date(a.fromDate);
+                const d2 = new Date(b.fromDate)
+                if(!isFromSorting) return d2.getTime() - d1.getTime();
+                return d1.getTime() - d2.getTime();
+            })
+            return sortedArray
+        })
 
+        setIsFromSorting((prev)=>!prev)
+       }
+       else if(isTypeOf === SortingTypes.ToDates ){
+        setLeaveRequest((prev:LeaveType[])=>{
+            const sortedArray = [...prev]
+            sortedArray.sort((a,b)=>{
+                const d1 = new Date(a.toDate);
+                const d2 = new Date(b.toDate)
+                if(!isToSorting) return d2.getTime() - d1.getTime();
+                return d1.getTime() - d2.getTime();
+            })
+            return sortedArray
+        })
+
+        setIsToSorting((prev)=>!prev)
+       }
+       else{
+        setLeaveRequest((prev)=>{
+            const sortedArray = [...prev]
+            sortedArray.sort((a,b)=>{
+                
+                if(!isTotalDaysSorting) return Number(a.totalDays) - Number(b.totalDays);
+                return Number(b.totalDays) - Number(a.totalDays);
+            })
+            return sortedArray
+        })
+
+        setIsTotalDaysSorting((prev)=>!prev)
+       }
+       
+    }
+   
     return (
         <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
             <thead className="bg-gray-50">
                 <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">Manager Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">From Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">To Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">Total Days</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">Manager Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">
+                        <div className="flex items-center space-x-2">
+                            <div>From Date</div>
+                            <div className="cursor-pointer" onClick={()=>handleSorting(SortingTypes.FromDates)}><FaSort/></div>
+                        </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">
+                        <div className="flex items-center space-x-2">
+                            <div>To Date</div>
+                            <div className="cursor-pointer" onClick={()=>handleSorting(SortingTypes.ToDates)}><FaSort/></div>
+                        </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">
+                        <div className="flex items-center space-x-2">
+                            <div>Total Days</div>
+                            <div className="cursor-pointer" onClick={()=>handleSorting(SortingTypes.TotalDays)}><FaSort/></div>
+                        </div>
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider w-[220px]">Reason for Leave</th>
                     <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider w-[150px]">Status</th>
                 </tr>
@@ -48,12 +112,11 @@ const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleC
             <tbody className="bg-white divide-y divide-gray-200">
                 {filterLeaveRequests.map((request, index) => (
                     <tr key={index}>
-                        <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.managerId}</td>
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.managerName}</td>
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.fromDate}</td>
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.toDate}</td>
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.totalDays}</td>
-                        <td className="px-6 py-4 text-left text-xs font-medium w-[220px]">{request.reasonForLeave}</td>
+                        <td className="px-6 py-4 text-left text-xs font-medium">{request.reasonForLeave}</td>
 
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap flex justify-between items-center w-[150px]">
                             <div className={`${colors[request.status]}`}>

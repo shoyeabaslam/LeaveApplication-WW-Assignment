@@ -12,6 +12,7 @@ export interface LeaveRequestType{
     leaveRequests: LeaveType[],
     handleCancleLeaveRequest: () => void,
     handleUpdateLeaveRequest: () => void,
+    setLeaveRequest:React.Dispatch<React.SetStateAction<LeaveType[]>>
     currentStatus: string,
     searchTerms:string,
 }

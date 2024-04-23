@@ -5,6 +5,12 @@ export enum Role {
 
 export enum Status {
     Pending = 'Pending',
-    Cancel = 'Cancel',
+    Cancelled = 'Cancelled',
     Approved = 'Approved'
+}
+
+export enum SortingTypes{
+    FromDates,
+    ToDates,
+    TotalDays
 }
