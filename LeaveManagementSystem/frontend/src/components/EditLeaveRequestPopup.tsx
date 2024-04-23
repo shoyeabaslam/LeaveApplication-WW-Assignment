@@ -66,7 +66,7 @@ const EditLeaveRequestPopup = ({setIsUpdatePopup}) => {
         console.log(formData);
       };
   return (
-    <div className='absolute flex justify-center items-center top-0 z-10  left-0 bottom-0 right-0 min-h-full  bg-white/80'>
+    <div className='fixed flex justify-center items-center top-0 z-10  left-0 bottom-0 right-0 min-h-full  bg-white/80'>
     <form className="py-4 px-6 shadow-md rounded-lg bg-white border">
         <div className=' grid grid-cols-2 gap-4'>
             <div className="col-span-2">

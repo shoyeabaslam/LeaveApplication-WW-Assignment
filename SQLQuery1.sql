@@ -1,62 +1,49 @@
 CREATE TABLE Employees (
-    EMP_ID INT PRIMARY KEY,
-    EMP_NAME NVARCHAR(255) NOT NULL,
-    EMP_EMAIL NVARCHAR(255) NOT NULL,
-    EMP_PASS NVARCHAR(255) NOT NULL,
-    TOTAL_LEAVE INT DEFAULT 20
-);
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    emp_id AS 'EMP' + FORMAT(id, '000'),
+    emp_name varchar(50),
+    emp_phone varchar(50),
+    emp_email varchar(50) UNIQUE,
+    emp_password varchar(50)
+)
 
 CREATE TABLE Managers (
-    M_ID INT PRIMARY KEY,
-    M_NAME NVARCHAR(255) NOT NULL,
-    M_EMAIL NVARCHAR(255) NOT NULL,
-    M_PASS NVARCHAR(255) NOT NULL,
-    ISADMIN BIT 
-);
+    mng_email varchar(50) PRIMARY KEY,
+    mng_name varchar(50),
+    mng_phone varchar(50),
+    mng_password varchar(50),
+    is_admin bit
+)
 
 CREATE TABLE LeaveRequests (
-    RequestID INT PRIMARY KEY IDENTITY(1,1),
-    EmpId INT,
-    EmpName NVARCHAR(255),
-    EmpPhone NVARCHAR(20),
-    ManagerEmail NVARCHAR(255),
-    FromDate DATETIME,
-    ToDate DATETIME,
-    TotalDays AS 
-        DATEDIFF(DAY, FromDate, ToDate) +
-        CASE 
-            WHEN CAST(FromDate AS TIME) < '09:30' THEN
-                CASE 
-                    WHEN CAST(ToDate AS TIME) >= '14:00' THEN 1
-                    ELSE 0.5
-                END
-            WHEN CAST(FromDate AS TIME) >= '09:30' AND CAST(FromDate AS TIME) < '14:00' THEN
-                CASE 
-                    WHEN CAST(ToDate AS TIME) >= '14:00' THEN 0.5
-                    ELSE 0
-                END
-            ELSE 0
-        END,
-    Reason NVARCHAR(MAX)
-);
+    id int identity(1,1) primary key,
+    employee_id int references Employees,
+    manager_email varchar(50) references Managers,
+    from_date datetime,
+    to_date datetime,
+    total_days float,
+    reason_for_leave varchar(200),
+    leave_status varchar(50)
+)
+
+-- Sample data for Employees table
+INSERT INTO Employees
+VALUES ('John Doe', '123-456-7890', 'john@example.com', 'password123'),
+       ('Jane Smith', '987-654-3210', 'jane@example.com', 'password456');
+
+-- Sample data for Managers table
+INSERT INTO Managers 
+VALUES ('manager1@example.com', 'Manager One', '111-222-3333', 'managerpass', 1),
+       ('manager2@example.com', 'Manager Two', '444-555-6666', 'managerpass', 0);
+
+-- Sample data for LeaveRequests table
+INSERT INTO LeaveRequests 
+VALUES (1,'manager1@example.com', '2024-04-20', '2024-04-22', '3', 'Vacation', 'Approved'),
+       (1,'manager2@example.com', '2024-04-25', '2024-04-27', '3', 'Family emergency', 'Pending');
 
 
-
-INSERT INTO LeaveRequests (EmpId, EmpName, EmpPhone, ManagerEmail, FromDate, ToDate, Reason)
-VALUES
-    (1, 'John Doe', '1234567890', 'manager1@example.com', '2024-12-31 08:00:00', '2025-01-05 12:00:00', 'Vacation'),
-    (2, 'Jane Smith', '0987654321', 'manager2@example.com', '2024-04-10 12:00:00', '2024-04-15 17:00:00', 'Family event'),
-    (3, 'Alice Johnson', '4567890123', 'manager1@example.com', '2024-04-20 08:30:00', '2024-04-25 16:30:00', 'Sick leave'),
-    (4, 'Bob Brown', '9876543210', 'manager2@example.com', '2024-04-05 07:45:00', '2024-04-10 14:30:00', 'Personal reasons'),
-    (5, 'Emily Davis', '3210987654', 'manager1@example.com', '2024-04-15 10:00:00', '2024-04-20 18:00:00', 'Vacation');
-
-select DATEDIFF(DAYOFYEAR,FromDate , ToDate) as date from LeaveRequests 
-select * from LeaveRequests where todate like '2025-01-05 12:00:00'
+select * from Employees
+select * from Managers
 select * from LeaveRequests
 
-
-SELECT YEAR(ToDate) AS LeaveYear, COUNT(*) AS TotalLeaveRequests
-FROM LeaveRequests
-GROUP BY YEAR(ToDate)
-ORDER BY LeaveYear;
-
+drop table Employee

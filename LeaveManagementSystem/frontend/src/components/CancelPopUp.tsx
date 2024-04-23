@@ -3,7 +3,7 @@ import { CancelPropsTypes } from "../types/CancelProps"
 
 const CancelPopUp:FC<CancelPropsTypes> = ({setIsCancelPopup}) => {
   return (
-    <div className='absolute flex justify-center items-center top-5  left-0 bottom-0 right-0 bg-white/80'>
+    <div className='fixed flex justify-center items-center top-0 overflow-hidden left-0 bottom-0 right-0 bg-white/80'>
         <div className='py-4 px-6 shadow-md rounded-lg bg-white border'>
             <h3 className='text-lg p-2 font-bold'>Are you sure you want to cancel the request?</h3>
             <div className="my-2 flex justify-between px-5 py-2">
