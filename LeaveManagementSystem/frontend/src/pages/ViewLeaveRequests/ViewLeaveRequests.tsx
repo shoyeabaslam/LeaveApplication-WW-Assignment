@@ -6,9 +6,10 @@ import EditLeaveRequestPopup from '../../components/EditLeaveRequestPopup';
 import RenderLeaveRequestsTable from '../../components/RenderLeaveRequestsTable';
 import { StatusData } from '../../utils/DataArray'
 import { ColorsType } from '../../types/ColorsType';
-import { LeaveType } from '../../types/LeaveRequestType';
 import { Status } from '../../types/Enum';
 import { getLeaveRequest } from '../../api/getLeaveRequest';
+import { LeaveType } from '../../types/LeaveRequestType';
+import { updateLeaveRequest } from '../../api/updateLeaveRequest';
 
 
 const colors: ColorsType = {
@@ -24,102 +25,9 @@ interface StatusLengthType{
     [Key:string]:string
 }
 
-const requests: LeaveType[] = [
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-04-20',
-        toDate: '2024-04-25',
-        totalDays: '6',
-        reasonForLeave: 'Vacation long vacation very long vacation very very very very',
-        status: 'Pending'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-04-20',
-        toDate: '2024-04-25',
-        totalDays: '5',
-        reasonForLeave: 'Vacation long vacation very long vacation very very very very',
-        status: 'Pending'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-04-20',
-        toDate: '2024-04-25',
-        totalDays: '6',
-        reasonForLeave: 'Vacation long vacation very long vacation very very very very',
-        status: 'Pending'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-04-20',
-        toDate: '2024-04-25',
-        totalDays: '5',
-        reasonForLeave: 'Vacation long vacation very long vacation very very very very',
-        status: 'Pending'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-05-10',
-        toDate: '2024-05-25',
-        totalDays: '4',
-        reasonForLeave: 'Vacation long vacation very long vacation very very very very',
-        status: 'Pending'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-06-18',
-        toDate: '2024-06-20',
-        totalDays: '5',
-        reasonForLeave: 'Family emergency',
-        status: 'Approved'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-04-18',
-        toDate: '2024-04-22',
-        totalDays: '5',
-        reasonForLeave: 'Family emergency',
-        status: 'Cancelled'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-05-10',
-        toDate: '2024-05-25',
-        totalDays: '4',
-        reasonForLeave: 'Vacation long vacation very long vacation very very very very',
-        status: 'Pending'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-06-18',
-        toDate: '2024-06-20',
-        totalDays: '1',
-        reasonForLeave: 'Family emergency',
-        status: 'Approved'
-    },
-    {
-        managerId: 'MNG002',
-        managerName: 'King',
-        fromDate: '2024-04-18',
-        toDate: '2024-04-22',
-        totalDays: '5',
-        reasonForLeave: 'Family emergency',
-        status: 'Cancelled'
-    },
-    // Add more sample data as needed
-];
 
 const ViewLeaveRequests = () => {
-  const [leaveRequests,setLeaveRequest] = useState(requests)
+  const [leaveRequests,setLeaveRequest] = useState<LeaveType[]>([])
   const [isCancelPopUp,setIsCancelPopup] = useState(false);
   const [isUpdatePopup,setIsUpdatePopup] = useState(false);
   const [currentStatus,setCurrentStatus] = useState('Pending');
@@ -131,24 +39,41 @@ const ViewLeaveRequests = () => {
     Pending:''
   })
 
+  const [currentId,setCurrentId] = useState<number>();
   //to fetch the data
+
+
+
   useEffect(()=>{
     async function data() {
-        const d = await getLeaveRequest()
-        console.log(d)
+        try{
+          const res = await getLeaveRequest('john@example.com');
+        if(res.ok){
+          const data:LeaveType[] = await res.json()
+          setLeaveRequest(data)
+          const pending = data.filter((dataItem)=>dataItem.leaveStatus === Status.Pending).length
+          const approved = data.filter((dataItem)=>dataItem.leaveStatus === Status.Cancelled).length
+          const cancelled = data.filter((dataItem)=>dataItem.leaveStatus === Status.Approved).length
+          setStatusLength({
+            Approved:approved.toString(),
+            Pending:pending.toString(),
+            Cancelled:cancelled.toString()
+          })
+        }
+        else{
+          console.log('No data found!!!')
+        }
+        }catch(err){
+          console.log(err)
+        }
     }
     data();
   },[])
 
-  useEffect(()=>{
-    const Approved = leaveRequests.filter((value)=>value.status === Status.Approved).length
-    const Pending = leaveRequests.filter((value)=>value.status === Status.Pending).length
-    const Cancelled = leaveRequests.filter((value)=>value.status === Status.Cancelled).length
-    setStatusLength({Approved:Approved.toString(),Cancelled:Cancelled.toString(),Pending:Pending.toString()})
-  },[leaveRequests])
-   
-  const handleCancleLeaveRequest = ()=>{
+ 
+  const handleCancleLeaveRequest = async (id:number)=>{
     setIsCancelPopup((prev) => !prev)
+    setCurrentId(id)
   }
   const handleUpdateLeaveRequest = ()=>{
     setIsUpdatePopup((prev)=>!prev)
@@ -164,7 +89,7 @@ const ViewLeaveRequests = () => {
   return (
    <SideBar data={LeaveApplicationData}>
      <div className="container mx-auto px-4 py-8">
-      {isCancelPopUp && <CancelPopUp setIsCancelPopup = {setIsCancelPopup}/>}
+      {isCancelPopUp && <CancelPopUp setIsCancelPopup = {setIsCancelPopup} currentId={currentId!} leaveRequests={leaveRequests}/>}
       {isUpdatePopup && <EditLeaveRequestPopup setIsUpdatePopup={setIsUpdatePopup} />}
               <h1 className="text-3xl font-semibold text-gray-800 mb-8">Leave Request Dashboard</h1>
               <div className='my-4 flex space-x-5'>

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "dpoB3SX93dc3zqwjdwUZmxjTYsyKmV3r+8CBUB9PePo=",
+  "Hash": "/XPJU7P3ojdhjJXOUvqiAlXMLna3UwWzf0v7p1lmGW0=",
   "Source": "backend",
   "BasePath": "_content/backend",
   "Mode": "Default",
@@ -47,10 +47,10 @@
       "OriginalItemSpec": "C:\\Users\\AbdulAslam\\.nuget\\packages\\microsoft.aspnetcore.components.quickgrid\\8.0.4\\staticwebassets\\QuickGrid.razor.js"
     },
     {
-      "Identity": "D:\\OneDrive - WinWire\\Desktop\\Final Assement\\backend\\obj\\Debug\\net8.0\\scopedcss\\bundle\\backend.styles.css",
+      "Identity": "D:\\OneDrive - WinWire\\Desktop\\Final Assessment - v-1\\LeaveManagementSystem\\backend\\obj\\Debug\\net8.0\\scopedcss\\bundle\\backend.styles.css",
       "SourceId": "backend",
       "SourceType": "Computed",
-      "ContentRoot": "D:\\OneDrive - WinWire\\Desktop\\Final Assement\\backend\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
+      "ContentRoot": "D:\\OneDrive - WinWire\\Desktop\\Final Assessment - v-1\\LeaveManagementSystem\\backend\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
       "BasePath": "_content/backend",
       "RelativePath": "backend.styles.css",
       "AssetKind": "All",
@@ -63,7 +63,7 @@
       "AssetTraitValue": "ApplicationBundle",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "D:\\OneDrive - WinWire\\Desktop\\Final Assement\\backend\\obj\\Debug\\net8.0\\scopedcss\\bundle\\backend.styles.css"
+      "OriginalItemSpec": "D:\\OneDrive - WinWire\\Desktop\\Final Assessment - v-1\\LeaveManagementSystem\\backend\\obj\\Debug\\net8.0\\scopedcss\\bundle\\backend.styles.css"
     }
   ]
 }

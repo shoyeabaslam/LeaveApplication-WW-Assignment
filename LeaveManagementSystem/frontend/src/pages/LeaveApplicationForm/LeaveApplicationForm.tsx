@@ -3,20 +3,23 @@ import SideBar from '../../components/SideBar';
 
 import InputField from '../../components/InputField';
 import { LeaveApplicationData } from '../../utils/SideBarModels/LeaveApplicationData';
-
+import { postLeaveRequest } from '../../api/postLeaveRequest';
+import { LeaveType } from '../../types/LeaveRequestType';
+import { Status } from '../../types/Enum';
+import { useNavigate } from 'react-router';
 
 
 const LeaveApplicationForm = () => {
   const [formData, setFormData] = useState({
     empId: '',
-    empName: '',
+    empEmail: 'john@example.com',
     empPhone: '',
     managerEmail: '',
     fromDate: '',
     toDate: '',
     reasonForLeave: ''
   });
-
+  const navigate = useNavigate();
   
   const [radioButton,setRadioButton] = useState({
     fromDate:{
@@ -37,7 +40,6 @@ const LeaveApplicationForm = () => {
       }
     }));
   
-    console.log(radioButton);
   };
   
   const [totalDays,setTotalDays] = useState('');
@@ -62,6 +64,8 @@ const LeaveApplicationForm = () => {
     return
   },[formData.fromDate, formData.toDate,radioButton.fromDate.isFirstHalf,radioButton.toDate.isFirstHalf])
 
+
+
   const handleChange = (e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -70,10 +74,29 @@ const LeaveApplicationForm = () => {
     });
   };
 
-  const handleSubmit = (e:FormEvent) => {
+  const handleSubmit = async (e:FormEvent) => {
     e.preventDefault();
     // Add form submission logic here
-    console.log(formData);
+    const body:LeaveType = {
+      empEmail:formData.empEmail,
+      mngEmail:formData.managerEmail,
+      fromDate:formData.fromDate,
+      toDate:formData.toDate,
+      totalDays:totalDays,
+      reasonForLeave:formData.reasonForLeave,
+      leaveStatus:Status.Pending
+    }
+    try{
+      const res = await postLeaveRequest(body);
+      if(res.ok){
+        navigate('/view-leaves')
+      }
+      else{
+        console.log(res)
+      }
+    }catch(err){
+      console.log(err)
+    }
   };
 
   return (
@@ -85,7 +108,7 @@ const LeaveApplicationForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-4">
          <InputField name='empId' type='text' inputValue={formData.empId} handleChange={handleChange} placeholder='Employee Id' isReadOnly={true}/>
-         <InputField name='empName' type='text' inputValue={formData.empName} handleChange={handleChange} placeholder='Employee Email' isReadOnly={true}/>
+         <InputField name='empEmail' type='email' inputValue={formData.empEmail} handleChange={handleChange} placeholder='Employee Email' isReadOnly={true}/>
          <InputField name='empPhone' type='text' inputValue={formData.empPhone} handleChange={handleChange} placeholder='Employee Phone' isReadOnly={true}/>
          <InputField name='managerEmail' type='email' inputValue={formData.managerEmail} handleChange={handleChange} placeholder='Manager Email' isAutoFocus={true}/>
          <InputField name='fromDate' type='date' inputValue={formData.fromDate} handleChange={handleChange} placeholder='From Date'/>

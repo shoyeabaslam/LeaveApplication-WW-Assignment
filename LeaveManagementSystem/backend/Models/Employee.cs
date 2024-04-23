@@ -5,13 +5,17 @@ namespace backend.Models;
 
 public partial class Employee
 {
-    public int EmpId { get; set; }
+    public int Id { get; set; }
 
-    public string EmpName { get; set; } = null!;
+    public string? EmpId { get; set; }
+
+    public string? EmpName { get; set; }
+
+    public string? EmpPhone { get; set; }
 
     public string EmpEmail { get; set; } = null!;
 
-    public string EmpPass { get; set; } = null!;
+    public string? EmpPassword { get; set; }
 
-    public int? TotalLeave { get; set; }
+    public virtual ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
 }

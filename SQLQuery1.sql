@@ -1,9 +1,9 @@
 CREATE TABLE Employees (
-    id INT IDENTITY(1,1) PRIMARY KEY,
+    id INT IDENTITY(1,1) unique,
     emp_id AS 'EMP' + FORMAT(id, '000'),
     emp_name varchar(50),
     emp_phone varchar(50),
-    emp_email varchar(50) UNIQUE,
+    emp_email varchar(50) PRIMARY KEY,
     emp_password varchar(50)
 )
 
@@ -17,8 +17,8 @@ CREATE TABLE Managers (
 
 CREATE TABLE LeaveRequests (
     id int identity(1,1) primary key,
-    employee_id int references Employees,
-    manager_email varchar(50) references Managers,
+    emp_email varchar(50) references Employees,
+    mng_email varchar(50) references Managers,
     from_date datetime,
     to_date datetime,
     total_days float,
@@ -38,8 +38,8 @@ VALUES ('manager1@example.com', 'Manager One', '111-222-3333', 'managerpass', 1)
 
 -- Sample data for LeaveRequests table
 INSERT INTO LeaveRequests 
-VALUES (1,'manager1@example.com', '2024-04-20', '2024-04-22', '3', 'Vacation', 'Approved'),
-       (1,'manager2@example.com', '2024-04-25', '2024-04-27', '3', 'Family emergency', 'Pending');
+VALUES ('john@example.com','manager1@example.com', '2024-04-20', '2024-04-22', '3', 'Vacation', 'Approved'),
+       ('john@example.com','manager2@example.com', '2024-04-25', '2024-04-27', '3', 'Family emergency', 'Pending');
 
 
 select * from Employees
@@ -47,3 +47,5 @@ select * from Managers
 select * from LeaveRequests
 
 drop table Employee
+drop table Managers
+drop table LeaveRequests

@@ -1,8 +1,9 @@
 
-const LEAVE_REQUEST_URL =' http://localhost:3000/LeaveRequests'
+const GET_URL = 'https://localhost:7096/api/LeaveRequests';
 
-export async function getLeaveRequest(){
-    const res = await fetch(LEAVE_REQUEST_URL);
-    const data = res.json();
-    return data
+
+export async function getLeaveRequest(empEmail:string){
+    const url = `${GET_URL}/${empEmail}`
+    const res = await fetch(url);
+    return res
 }

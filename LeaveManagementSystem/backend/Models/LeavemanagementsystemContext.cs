@@ -28,57 +28,94 @@ public partial class LeavemanagementsystemContext : DbContext
     {
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmpId).HasName("PK__Employee__16EBFA26072F9877");
+            entity.HasKey(e => e.EmpEmail).HasName("PK__Employee__3D542B0915D14277");
 
-            entity.Property(e => e.EmpId)
-                .ValueGeneratedNever()
-                .HasColumnName("EMP_ID");
+            entity.HasIndex(e => e.Id, "UQ__Employee__3213E83EAB533907").IsUnique();
+
             entity.Property(e => e.EmpEmail)
-                .HasMaxLength(255)
-                .HasColumnName("EMP_EMAIL");
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("emp_email");
+            entity.Property(e => e.EmpId)
+                .HasMaxLength(4000)
+                .HasComputedColumnSql("('EMP'+format([id],'000'))", false)
+                .HasColumnName("emp_id");
             entity.Property(e => e.EmpName)
-                .HasMaxLength(255)
-                .HasColumnName("EMP_NAME");
-            entity.Property(e => e.EmpPass)
-                .HasMaxLength(255)
-                .HasColumnName("EMP_PASS");
-            entity.Property(e => e.TotalLeave)
-                .HasDefaultValue(20)
-                .HasColumnName("TOTAL_LEAVE");
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("emp_name");
+            entity.Property(e => e.EmpPassword)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("emp_password");
+            entity.Property(e => e.EmpPhone)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("emp_phone");
+            entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("id");
         });
 
         modelBuilder.Entity<LeaveRequest>(entity =>
         {
-            entity.HasKey(e => e.RequestId).HasName("PK__LeaveReq__33A8519A44D48C5D");
+            entity.HasKey(e => e.Id).HasName("PK__LeaveReq__3213E83F8B80BB80");
 
-            entity.Property(e => e.RequestId).HasColumnName("RequestID");
-            entity.Property(e => e.EmpName).HasMaxLength(255);
-            entity.Property(e => e.EmpPhone).HasMaxLength(20);
-            entity.Property(e => e.FromDate).HasColumnType("datetime");
-            entity.Property(e => e.ManagerEmail).HasMaxLength(255);
-            entity.Property(e => e.ToDate).HasColumnType("datetime");
-            entity.Property(e => e.TotalDays)
-                .HasComputedColumnSql("(datediff(day,[FromDate],[ToDate])+case when CONVERT([time],[FromDate])<'09:30' then case when CONVERT([time],[ToDate])>='14:00' then (1) else (0.5) end when CONVERT([time],[FromDate])>='09:30' AND CONVERT([time],[FromDate])<'14:00' then case when CONVERT([time],[ToDate])>='14:00' then (0.5) else (0) end else (0) end)", false)
-                .HasColumnType("numeric(12, 1)");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.EmpEmail)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("emp_email");
+            entity.Property(e => e.FromDate)
+                .HasColumnType("datetime")
+                .HasColumnName("from_date");
+            entity.Property(e => e.LeaveStatus)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("leave_status");
+            entity.Property(e => e.MngEmail)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("mng_email");
+            entity.Property(e => e.ReasonForLeave)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .HasColumnName("reason_for_leave");
+            entity.Property(e => e.ToDate)
+                .HasColumnType("datetime")
+                .HasColumnName("to_date");
+            entity.Property(e => e.TotalDays).HasColumnName("total_days");
+
+            entity.HasOne(d => d.EmpEmailNavigation).WithMany(p => p.LeaveRequests)
+                .HasForeignKey(d => d.EmpEmail)
+                .HasConstraintName("FK__LeaveRequ__emp_e__6EF57B66");
+
+            entity.HasOne(d => d.MngEmailNavigation).WithMany(p => p.LeaveRequests)
+                .HasForeignKey(d => d.MngEmail)
+                .HasConstraintName("FK__LeaveRequ__mng_e__6FE99F9F");
         });
 
         modelBuilder.Entity<Manager>(entity =>
         {
-            entity.HasKey(e => e.MId).HasName("PK__Managers__18B1A317F8BE0946");
+            entity.HasKey(e => e.MngEmail).HasName("PK__Managers__BC5B379FA7C8D7B5");
 
-            entity.Property(e => e.MId)
-                .ValueGeneratedNever()
-                .HasColumnName("M_ID");
-            entity.Property(e => e.Isadmin).HasColumnName("ISADMIN");
-            entity.Property(e => e.MEmail)
-                .HasMaxLength(255)
-                .HasColumnName("M_EMAIL");
-            entity.Property(e => e.MName)
-                .HasMaxLength(255)
-                .HasColumnName("M_NAME");
-            entity.Property(e => e.MPass)
-                .HasMaxLength(255)
-                .HasColumnName("M_PASS");
+            entity.Property(e => e.MngEmail)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("mng_email");
+            entity.Property(e => e.IsAdmin).HasColumnName("is_admin");
+            entity.Property(e => e.MngName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("mng_name");
+            entity.Property(e => e.MngPassword)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("mng_password");
+            entity.Property(e => e.MngPhone)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("mng_phone");
         });
 
         OnModelCreatingPartial(modelBuilder);

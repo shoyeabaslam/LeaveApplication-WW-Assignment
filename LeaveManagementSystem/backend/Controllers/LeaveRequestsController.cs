@@ -28,10 +28,10 @@ namespace backend.Controllers
         }
 
         // GET: api/LeaveRequests/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<LeaveRequest>> GetLeaveRequest(int id)
+        [HttpGet("{empEmail}")]
+        public async Task<ActionResult<IEnumerable<LeaveRequest>>> GetLeaveRequest(string empEmail)
         {
-            var leaveRequest = await _context.LeaveRequests.FindAsync(id);
+            var leaveRequest = await _context.LeaveRequests.Where((lr)=>lr.EmpEmail == empEmail).ToListAsync();
 
             if (leaveRequest == null)
             {
@@ -46,7 +46,7 @@ namespace backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLeaveRequest(int id, LeaveRequest leaveRequest)
         {
-            if (id != leaveRequest.RequestId)
+            if (id != leaveRequest.Id)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace backend.Controllers
             _context.LeaveRequests.Add(leaveRequest);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLeaveRequest", new { id = leaveRequest.RequestId }, leaveRequest);
+            return CreatedAtAction(nameof(PostLeaveRequest), new { id = leaveRequest.Id }, leaveRequest);
         }
 
         // DELETE: api/LeaveRequests/5
@@ -101,7 +101,7 @@ namespace backend.Controllers
 
         private bool LeaveRequestExists(int id)
         {
-            return _context.LeaveRequests.Any(e => e.RequestId == id);
+            return _context.LeaveRequests.Any(e => e.Id == id);
         }
     }
 }

@@ -5,23 +5,23 @@ namespace backend.Models;
 
 public partial class LeaveRequest
 {
-    public int RequestId { get; set; }
+    public int Id { get; set; }
 
-    public int? EmpId { get; set; }
+    public string? EmpEmail { get; set; }
 
-    public string? EmpName { get; set; }
-
-    public string? EmpPhone { get; set; }
-
-    public string? ManagerEmail { get; set; }
+    public string? MngEmail { get; set; }
 
     public DateTime? FromDate { get; set; }
 
     public DateTime? ToDate { get; set; }
 
-    public decimal? TotalDays { get; set; }
+    public double? TotalDays { get; set; }
 
-    public string? Reason { get; set; }
+    public string? ReasonForLeave { get; set; }
 
-    public string? Status { get;set }
+    public string? LeaveStatus { get; set; }
+
+    public virtual Employee? EmpEmailNavigation { get; set; }
+
+    public virtual Manager? MngEmailNavigation { get; set; }
 }
