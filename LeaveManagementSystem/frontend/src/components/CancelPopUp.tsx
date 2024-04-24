@@ -1,16 +1,37 @@
 import { FC } from "react"
 import { CancelPropsTypes } from "../types/CancelProps"
-import { updateLeaveRequest } from "../api/updateLeaveRequest"
+import { updateLeaveRequest } from "../api/LeaveRequestAPI"
+import { Status } from "../types/Enum";
 
-const CancelPopUp: FC<CancelPropsTypes> = ({ setIsCancelPopup, currentId, leaveRequests }) => {
+const CancelPopUp: FC<CancelPropsTypes> = ({ setIsCancelPopup, currentId, leaveRequests,setLeaveRequest}) => {
+
+  const updateLeaveStatus = (id: number, newStatus: 'Pending' | 'Approved' | 'Cancelled') => {
+    const index = leaveRequests.findIndex(request => request.id === id);
+    if (index !== -1) {
+        const updatedLeaveRequests = [...leaveRequests];
+        
+        // Update the leave status of the found leave request
+        updatedLeaveRequests[index] = {
+            ...updatedLeaveRequests[index],
+            leaveStatus: newStatus
+        };
+        
+        // Set the updated array using setLeaveRequest
+        setLeaveRequest(updatedLeaveRequests);
+    } else {
+        console.error(`Leave request with ID ${id} not found.`);
+    }
+};
+
+
   const updateStatusToCancel = async () => {
-    console.log(leaveRequests)
     const data = leaveRequests.filter((lr) => lr.id === currentId)[0]
     if (data) {
-      const res = await updateLeaveRequest({...data,leaveStatus:'Cancelled'},currentId)
+      const res = await updateLeaveRequest({...data,leaveStatus:Status.Cancelled},currentId)
       try {
         if (res.ok) {
           console.log('cancelled successfully')
+          updateLeaveStatus(currentId,Status.Cancelled)                            
         }
         else {
           console.log('something went wrong')

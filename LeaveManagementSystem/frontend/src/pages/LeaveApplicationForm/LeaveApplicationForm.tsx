@@ -3,9 +3,9 @@ import SideBar from '../../components/SideBar';
 
 import InputField from '../../components/InputField';
 import { LeaveApplicationData } from '../../utils/SideBarModels/LeaveApplicationData';
-import { postLeaveRequest } from '../../api/postLeaveRequest';
+import { postLeaveRequest } from '../../api/LeaveRequestAPI';
 import { LeaveType } from '../../types/LeaveRequestType';
-import { Status } from '../../types/Enum';
+import { LeaveShift, Status } from '../../types/Enum';
 import { useNavigate } from 'react-router';
 
 
@@ -23,20 +23,19 @@ const LeaveApplicationForm = () => {
   
   const [radioButton,setRadioButton] = useState({
     fromDate:{
-      isFirstHalf:true
+      leaveShift:LeaveShift.FirstHalf
     },
     toDate:{
-      isFirstHalf:false
+      leaveShift:LeaveShift.SecondHalf
     }
   })
 
   const handleRadioButtons = (e:React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name)
     setRadioButton(prevState => ({
       ...prevState,
-      [name]: { // Update the specific property using the name variable
-        isFirstHalf: (value === 'FirstHalf') // Set isFirstHalf based on the radio button value
+      [name]: {
+        leaveShift : value
       }
     }));
   
@@ -53,50 +52,77 @@ const LeaveApplicationForm = () => {
       const totalDays = differenceMs / (1000 * 60 * 60 * 24) + 1;
       if(!Number.isNaN(totalDays)){
         let dayCount = 0;
-        if((!radioButton.fromDate.isFirstHalf && !radioButton.toDate.isFirstHalf) || (radioButton.fromDate.isFirstHalf && radioButton.toDate.isFirstHalf)){
+        if((radioButton.fromDate.leaveShift === LeaveShift.FirstHalf && 
+          radioButton.toDate.leaveShift === LeaveShift.FirstHalf) || 
+          (radioButton.fromDate.leaveShift === LeaveShift.SecondHalf && radioButton.toDate.leaveShift === LeaveShift.SecondHalf)){
           dayCount = -0.5
         }
-        if(!radioButton.fromDate.isFirstHalf && radioButton.toDate.isFirstHalf) dayCount = -1
+        if(radioButton.fromDate.leaveShift === LeaveShift.SecondHalf && radioButton.toDate.leaveShift === LeaveShift.FirstHalf) dayCount = -1
         setTotalDays((totalDays + dayCount).toString())
       }
     }
     calculateTotalDays()
     return
-  },[formData.fromDate, formData.toDate,radioButton.fromDate.isFirstHalf,radioButton.toDate.isFirstHalf])
+  },[formData.fromDate, formData.toDate,radioButton.fromDate.leaveShift,radioButton.toDate.leaveShift])
 
 
 
   const handleChange = (e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+   
+    if(name === 'fromDate'){
+      setFormData({
+        ...formData,
+        ['fromDate']:value,
+        ['toDate']:value
+      })
+    }
+    else if(name === 'toDate'){
+      const d1 = new Date(formData.fromDate).getTime();
+      const d2 = new Date(value).getTime()
+      if((d2 - d1) >= 0){
+        setFormData({
+          ...formData,
+          [name]: value
+        });
+      }
+    }
+    else{
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
+    
   };
 
   const handleSubmit = async (e:FormEvent) => {
     e.preventDefault();
     // Add form submission logic here
-    const body:LeaveType = {
-      empEmail:formData.empEmail,
-      mngEmail:formData.managerEmail,
-      fromDate:formData.fromDate,
-      toDate:formData.toDate,
-      totalDays:totalDays,
-      reasonForLeave:formData.reasonForLeave,
-      leaveStatus:Status.Pending
-    }
-    try{
-      const res = await postLeaveRequest(body);
-      if(res.ok){
-        navigate('/view-leaves')
-      }
-      else{
-        console.log(res)
-      }
-    }catch(err){
-      console.log(err)
-    }
+    // const body:LeaveType = {
+    //   empId:1,
+    //   empEmail:formData.empEmail,
+    //   mngEmail:formData.managerEmail,
+    //   fromDate:formData.fromDate,
+    //   toDate:formData.toDate,
+    //   totalDays:totalDays,
+    //   reasonForLeave:formData.reasonForLeave,
+    //   leaveStatus:Status.Pending,
+    //   fromLeaveShift: "Morning",
+    //   toLeaveShift: "Afternoon",
+    // }
+    // try{
+    //   const res = await postLeaveRequest(body);
+    //   if(res.ok){
+    //     navigate('/view-leaves')
+    //   }
+    //   else{
+    //     console.log(res)
+    //   }
+    // }catch(err){
+    //   console.log(err)
+    // }
+    console.log(radioButton)
   };
 
   return (
@@ -143,7 +169,7 @@ const LeaveApplicationForm = () => {
             </div>
           </div>  
 
-          <InputField name='totalDays' type='text' inputValue={totalDays} handleChange={handleChange} placeholder='Total Days'/>
+          <InputField name='totalDays' type='text' inputValue={totalDays} handleChange={handleChange} placeholder='Total Days' isReadOnly={true}/>
 
           <div className="col-span-2">
             <label htmlFor="reasonForLeave" className="block text-sm font-medium text-gray-700">Reason for Leave</label>

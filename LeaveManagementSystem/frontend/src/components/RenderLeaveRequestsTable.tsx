@@ -12,14 +12,13 @@ const colors = {
 }
 
 const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleCancleLeaveRequest, handleUpdateLeaveRequest, currentStatus, searchTerms,setLeaveRequest }) => {
-
     const [isFromSorting,setIsFromSorting] = useState(false);
     const [isToSorting,setIsToSorting] = useState(false);
     const [isTotalDaysSorting,setIsTotalDaysSorting] = useState(false)
 
     //filtering the data
     const filterLeaveRequests = leaveRequests.filter((item) => {
-        const statusMatches = item.leaveStatus === currentStatus;
+        const statusMatches = item.leaveStatus === currentStatus || currentStatus === 'All';
         const searchTermNotEmpty = searchTerms.length !== 0;
         const searchTermLowerCase = searchTerms.toLowerCase();
 
