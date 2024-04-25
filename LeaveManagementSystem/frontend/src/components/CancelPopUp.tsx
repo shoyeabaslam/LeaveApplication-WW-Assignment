@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { CancelPropsTypes } from "../types/CancelProps"
-import { updateLeaveRequest } from "../api/LeaveRequestAPI"
+import { updateRequest } from "../api/LeaveRequestAPI"
 import { Status } from "../types/Enum";
 
 const CancelPopUp: FC<CancelPropsTypes> = ({ setIsCancelPopup, currentId, leaveRequests,setLeaveRequest}) => {
@@ -27,7 +27,10 @@ const CancelPopUp: FC<CancelPropsTypes> = ({ setIsCancelPopup, currentId, leaveR
   const updateStatusToCancel = async () => {
     const data = leaveRequests.filter((lr) => lr.id === currentId)[0]
     if (data) {
-      const res = await updateLeaveRequest({...data,leaveStatus:Status.Cancelled},currentId)
+      const res = await updateRequest({
+                              ...data,
+                              leaveStatus:Status.Cancelled
+                            },currentId)
       try {
         if (res.ok) {
           console.log('cancelled successfully')

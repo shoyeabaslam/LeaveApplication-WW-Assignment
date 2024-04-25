@@ -8558,11 +8558,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\OneDrive - WinWire\\Desktop\\LMS\\backend\\backend.csproj",
+      "projectUniqueName": "D:\\OneDrive - WinWire\\Desktop\\Final Assessment - v-1\\backend\\backend.csproj",
       "projectName": "backend",
-      "projectPath": "D:\\OneDrive - WinWire\\Desktop\\LMS\\backend\\backend.csproj",
+      "projectPath": "D:\\OneDrive - WinWire\\Desktop\\Final Assessment - v-1\\backend\\backend.csproj",
       "packagesPath": "C:\\Users\\AbdulAslam\\.nuget\\packages\\",
-      "outputPath": "D:\\OneDrive - WinWire\\Desktop\\LMS\\backend\\obj\\",
+      "outputPath": "D:\\OneDrive - WinWire\\Desktop\\Final Assessment - v-1\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

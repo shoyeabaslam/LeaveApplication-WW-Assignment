@@ -3,6 +3,7 @@ import { LeaveType } from "../types/LeaveRequestType";
 const BASE_URL = 'https://localhost:7231/api/LeaveRequests';
 
 export async function postLeaveRequest(body: LeaveType) {
+    console.log(body)
     const res = await fetch(BASE_URL, {
         method: 'POST',
         headers: {
@@ -21,7 +22,7 @@ export async function getLeaveRequest(empId:number){
 }
 
 
-export async function updateLeaveRequest(data:LeaveType,id:number){
+export async function updateRequest(data:LeaveType,id:number){
     const url = `${BASE_URL}/${id}`
     const res = fetch(url,{
         method: 'PUT',

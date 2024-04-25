@@ -1,11 +1,14 @@
 export interface LeaveType {
     id?:number,
-    empEmail:string,
+    empId:number,
+    mngId:number,
     mngEmail: string,
     fromDate: string,
     toDate: string,
     totalDays: string,
     reasonForLeave:string,
+    fromLeaveShift: string,
+    toLeaveShift: string,
     leaveStatus: 'Pending' | 'Approved' | 'Cancelled',
     [key:string]:string | number | undefined,
 }

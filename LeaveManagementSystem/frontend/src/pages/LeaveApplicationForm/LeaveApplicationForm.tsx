@@ -99,29 +99,30 @@ const LeaveApplicationForm = () => {
   const handleSubmit = async (e:FormEvent) => {
     e.preventDefault();
     // Add form submission logic here
-    // const body:LeaveType = {
-    //   empId:1,
-    //   empEmail:formData.empEmail,
-    //   mngEmail:formData.managerEmail,
-    //   fromDate:formData.fromDate,
-    //   toDate:formData.toDate,
-    //   totalDays:totalDays,
-    //   reasonForLeave:formData.reasonForLeave,
-    //   leaveStatus:Status.Pending,
-    //   fromLeaveShift: "Morning",
-    //   toLeaveShift: "Afternoon",
-    // }
-    // try{
-    //   const res = await postLeaveRequest(body);
-    //   if(res.ok){
-    //     navigate('/view-leaves')
-    //   }
-    //   else{
-    //     console.log(res)
-    //   }
-    // }catch(err){
-    //   console.log(err)
-    // }
+    const body:LeaveType = {
+      empId:1,
+      mngId:1,
+      mngEmail:formData.managerEmail,
+      fromDate:formData.fromDate,
+      toDate:formData.toDate,
+      totalDays:totalDays,
+      reasonForLeave:formData.reasonForLeave,
+      leaveStatus:Status.Pending,
+      fromLeaveShift: radioButton.fromDate.leaveShift,
+      toLeaveShift: radioButton.toDate.leaveShift,
+    }
+    try{
+      const res = await postLeaveRequest(body);
+      if(res.ok){
+        console.log(res)
+        navigate('/view-leaves')
+      }
+      else{
+        console.log(res)
+      }
+    }catch(err){
+      console.log(err)
+    }
     console.log(radioButton)
   };
 

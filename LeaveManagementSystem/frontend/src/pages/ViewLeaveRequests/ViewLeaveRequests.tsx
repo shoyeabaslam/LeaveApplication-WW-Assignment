@@ -45,7 +45,7 @@ const ViewLeaveRequests = () => {
   useEffect(()=>{
     async function data() {
         try{
-          const res = await getLeaveRequest(2);
+          const res = await getLeaveRequest(1);
         if(res.ok){
           const data:LeaveType[] = await res.json()
           setLeaveRequest(data)

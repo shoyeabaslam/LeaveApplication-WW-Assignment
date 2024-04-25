@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage/LoginPage.tsx'
 import LeaveApplicationForm from './pages/LeaveApplicationForm/LeaveApplicationForm.tsx'
 import ManagementLogin from './pages/ManagementLogin/ManagementLogin.tsx'
 import ViewLeaveRequests from './pages/ViewLeaveRequests/ViewLeaveRequests.tsx'
+import UserProvider from './context/UserProvider.tsx'
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +22,8 @@ const routes = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={routes}/>
+    <UserProvider>
+      <RouterProvider router={routes}/>
+    </UserProvider>
   </React.StrictMode>,
 )

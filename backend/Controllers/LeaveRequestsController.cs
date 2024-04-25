@@ -28,13 +28,13 @@ namespace backend.Controllers
         }
 
         // GET: api/LeaveRequests/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<LeaveRequest>>> GetLeaveRequest(int id)
+        [HttpGet("{empId}")]
+        public async Task<ActionResult<IEnumerable<LeaveRequest>>> GetLeaveRequest(int empId)
         {
-                var leaveRequest = await _context.LeaveRequests
-                                        .Where(lr => lr.EmpId == id)
-                                        .OrderByDescending(lr=>lr.CreatedAt)
-                                        .ToListAsync();
+            var leaveRequest = await _context.LeaveRequests
+                        .Where(lr => lr.EmpId == empId)
+                        .OrderByDescending(lr => lr.CreatedAt)
+                        .ToArrayAsync();
 
             if (leaveRequest == null)
             {
@@ -83,24 +83,9 @@ namespace backend.Controllers
             _context.LeaveRequests.Add(leaveRequest);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLeaveRequest", new { id = leaveRequest.Id }, leaveRequest);
+            return CreatedAtAction(nameof(PostLeaveRequest), new { id = leaveRequest.Id }, leaveRequest);
         }
 
-        // DELETE: api/LeaveRequests/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLeaveRequest(int id)
-        {
-            var leaveRequest = await _context.LeaveRequests.FindAsync(id);
-            if (leaveRequest == null)
-            {
-                return NotFound();
-            }
-
-            _context.LeaveRequests.Remove(leaveRequest);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
 
         private bool LeaveRequestExists(int id)
         {
