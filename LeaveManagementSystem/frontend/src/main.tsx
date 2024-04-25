@@ -8,6 +8,7 @@ import LeaveApplicationForm from './pages/LeaveApplicationForm/LeaveApplicationF
 import ManagementLogin from './pages/ManagementLogin/ManagementLogin.tsx'
 import ViewLeaveRequests from './pages/ViewLeaveRequests/ViewLeaveRequests.tsx'
 import UserProvider from './context/UserProvider.tsx'
+import { ToastContainer } from 'react-toastify'
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +24,18 @@ const routes = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <UserProvider>
+    <ToastContainer
+          position="top-right"
+          autoClose={1500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover={false}
+          theme="colored"
+        />
       <RouterProvider router={routes}/>
     </UserProvider>
   </React.StrictMode>,

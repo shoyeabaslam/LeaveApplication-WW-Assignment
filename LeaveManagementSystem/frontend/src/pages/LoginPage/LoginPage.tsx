@@ -1,12 +1,14 @@
-import { FormEvent, useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { FormEvent, useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import InputField from '../../components/InputField';
 import { login } from '../../api/Auth';
 import UserContext from '../../context/UserContext';
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = () => {
-  const {user,setUser} = useContext(UserContext);
-
+  const {setUser} = useContext(UserContext);
+  const navigate = useNavigate()
   const [formData, setFormData] = useState(
     {
       email: '',
@@ -42,7 +44,9 @@ const LoginPage = () => {
         const res = await login(formData)
         if (res.ok) {
           const data = await res.json();
+          toast.success('Logged in successfully')
           setUser(data)
+          navigate('/leave-application')
         }
         else {
           console.log('Invalid credentials')

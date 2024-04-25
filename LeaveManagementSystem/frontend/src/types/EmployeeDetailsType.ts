@@ -4,5 +4,6 @@ export interface EmployeeDetailsType{
     employeeName: string,
     employeePassword: string,
     employeePhone: string,
+    managerId:number,
     isAdmin?: boolean
 }

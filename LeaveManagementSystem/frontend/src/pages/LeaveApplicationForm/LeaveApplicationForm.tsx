@@ -1,4 +1,4 @@
-import  { FormEvent, useEffect, useState } from 'react';
+import  { FormEvent, useContext, useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar';
 
 import InputField from '../../components/InputField';
@@ -7,9 +7,13 @@ import { postLeaveRequest } from '../../api/LeaveRequestAPI';
 import { LeaveType } from '../../types/LeaveRequestType';
 import { LeaveShift, Status } from '../../types/Enum';
 import { useNavigate } from 'react-router';
+import UserContext from '../../context/UserContext';
+import { toast } from 'react-toastify';
+import InvalidPage from '../../components/InvalidPage';
 
 
 const LeaveApplicationForm = () => {
+  const {user} = useContext(UserContext);
   const [formData, setFormData] = useState({
     empId: '',
     empEmail: 'john@example.com',
@@ -21,6 +25,18 @@ const LeaveApplicationForm = () => {
   });
   const navigate = useNavigate();
   
+  useEffect(()=>{
+    if(user){
+      const intialFormData = {
+        ...formData,
+        empId:user.empId.toString(),
+        empEmail:user.employeeEmail,
+        empPhone:user.employeePhone
+      }
+      setFormData(intialFormData)
+    }
+  },[formData, user])
+
   const [radioButton,setRadioButton] = useState({
     fromDate:{
       leaveShift:LeaveShift.FirstHalf
@@ -100,8 +116,8 @@ const LeaveApplicationForm = () => {
     e.preventDefault();
     // Add form submission logic here
     const body:LeaveType = {
-      empId:1,
-      mngId:1,
+      empId:user?.empId || 0,
+      mngId:user?.managerId || null,
       mngEmail:formData.managerEmail,
       fromDate:formData.fromDate,
       toDate:formData.toDate,
@@ -111,79 +127,91 @@ const LeaveApplicationForm = () => {
       fromLeaveShift: radioButton.fromDate.leaveShift,
       toLeaveShift: radioButton.toDate.leaveShift,
     }
+    if(Number(totalDays) === 0){
+      toast.error('Days cannot be zero');
+      return
+    }
     try{
       const res = await postLeaveRequest(body);
       if(res.ok){
         console.log(res)
+        toast.success('Sent Successfully');
         navigate('/view-leaves')
       }
       else{
-        console.log(res)
+        toast.error(`Error occured ${res.status}`)
       }
     }catch(err){
-      console.log(err)
+      toast.error(`Error occured ${err}`)
     }
-    console.log(radioButton)
   };
 
-  return (
+  if(user){
+    return (
   
-<SideBar data = {LeaveApplicationData}>
-
-<div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-xl">
-      <h2 className="text-2xl font-semibold text-center mb-5">Leave Form</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-4">
-         <InputField name='empId' type='text' inputValue={formData.empId} handleChange={handleChange} placeholder='Employee Id' isReadOnly={true}/>
-         <InputField name='empEmail' type='email' inputValue={formData.empEmail} handleChange={handleChange} placeholder='Employee Email' isReadOnly={true}/>
-         <InputField name='empPhone' type='text' inputValue={formData.empPhone} handleChange={handleChange} placeholder='Employee Phone' isReadOnly={true}/>
-         <InputField name='managerEmail' type='email' inputValue={formData.managerEmail} handleChange={handleChange} placeholder='Manager Email' isAutoFocus={true}/>
-         <InputField name='fromDate' type='date' inputValue={formData.fromDate} handleChange={handleChange} placeholder='From Date'/>
-        
-          {/* from date radio buttons */}
-          <div className='flex flex-col justify-center'>
-            <div className='mt-5'>
-              <div className='flex space-x-4'>
-                <input type='radio' name='fromDate' value='FirstHalf' onChange={handleRadioButtons} defaultChecked/>
-                <label>First Half</label>
+      <SideBar data = {LeaveApplicationData}>
+      
+      <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-xl">
+            <h2 className="text-2xl font-semibold text-center mb-5">Leave Form</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="grid grid-cols-2 gap-4">
+               <InputField name='empId' type='text' inputValue={formData.empId} handleChange={handleChange} placeholder='Employee Id' isReadOnly={true}/>
+               <InputField name='empEmail' type='email' inputValue={formData.empEmail} handleChange={handleChange} placeholder='Employee Email' isReadOnly={true}/>
+               <InputField name='empPhone' type='text' inputValue={formData.empPhone} handleChange={handleChange} placeholder='Employee Phone' isReadOnly={true}/>
+               <InputField name='managerEmail' type='email' inputValue={formData.managerEmail} handleChange={handleChange} placeholder='Manager Email' isAutoFocus={true}/>
+               <InputField name='fromDate' type='date' inputValue={formData.fromDate} handleChange={handleChange} placeholder='From Date'/>
+              
+                {/* from date radio buttons */}
+                <div className='flex flex-col justify-center'>
+                  <div className='mt-5'>
+                    <div className='flex space-x-4'>
+                      <input type='radio' name='fromDate' value='FirstHalf' onChange={handleRadioButtons} defaultChecked/>
+                      <label>First Half</label>
+                    </div>
+                    <div className='flex space-x-4'>
+                      <input type='radio' name='fromDate' value='SecondHalf' onChange={handleRadioButtons}/>
+                      <label>Second Half</label>
+                    </div>
+                  </div>
+                </div>
+      
+                <InputField name='toDate' type='date' inputValue={formData.toDate} handleChange={handleChange} placeholder='To Date'/>
+      
+                 {/* to date radio buttons */}
+                 <div className='flex flex-col justify-center'>
+                  <div className='mt-5'>
+                    <div className='flex space-x-4'>
+                      <input type='radio' name='toDate' value='FirstHalf' onChange={handleRadioButtons}/>
+                      <label>First Half</label>
+                    </div>
+                    <div className='flex space-x-4'>
+                      <input type='radio' name='toDate' value='SecondHalf' defaultChecked onChange={handleRadioButtons} />
+                      <label>Second Half</label>
+                    </div>
+                  </div>
+                </div>  
+      
+                <InputField name='totalDays' type='text' inputValue={totalDays} handleChange={handleChange} placeholder='Total Days' isReadOnly={true}/>
+      
+                <div className="col-span-2">
+                  <label htmlFor="reasonForLeave" className="block text-sm font-medium text-gray-700">Reason for Leave</label>
+                  <textarea id="reasonForLeave" name="reasonForLeave" value={formData.reasonForLeave} onChange={handleChange} rows={3} className="mt-1 p-2 w-full border rounded-md focus:outline-blue-500"></textarea>
+                </div>
               </div>
-              <div className='flex space-x-4'>
-                <input type='radio' name='fromDate' value='SecondHalf' onChange={handleRadioButtons}/>
-                <label>Second Half</label>
+              <div className="mt-6">
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Submit</button>
               </div>
-            </div>
+            </form>
           </div>
-
-          <InputField name='toDate' type='date' inputValue={formData.toDate} handleChange={handleChange} placeholder='To Date'/>
-
-           {/* to date radio buttons */}
-           <div className='flex flex-col justify-center'>
-            <div className='mt-5'>
-              <div className='flex space-x-4'>
-                <input type='radio' name='toDate' value='FirstHalf' onChange={handleRadioButtons}/>
-                <label>First Half</label>
-              </div>
-              <div className='flex space-x-4'>
-                <input type='radio' name='toDate' value='SecondHalf' defaultChecked onChange={handleRadioButtons} />
-                <label>Second Half</label>
-              </div>
-            </div>
-          </div>  
-
-          <InputField name='totalDays' type='text' inputValue={totalDays} handleChange={handleChange} placeholder='Total Days' isReadOnly={true}/>
-
-          <div className="col-span-2">
-            <label htmlFor="reasonForLeave" className="block text-sm font-medium text-gray-700">Reason for Leave</label>
-            <textarea id="reasonForLeave" name="reasonForLeave" value={formData.reasonForLeave} onChange={handleChange} rows={3} className="mt-1 p-2 w-full border rounded-md focus:outline-blue-500"></textarea>
-          </div>
-        </div>
-        <div className="mt-6">
-          <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Submit</button>
-        </div>
-      </form>
-    </div>
-</SideBar>
-  );
+      </SideBar>
+        );
+  }
+  else{
+    return(
+      <InvalidPage/>
+    )
+  }
+  
 };
 
 export default LeaveApplicationForm;

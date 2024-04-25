@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, useContext } from "react";
 import ReactChildType from "../types/ReactChildType";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdOutlineClose ,MdAccountCircle} from "react-icons/md";
@@ -6,12 +6,19 @@ import ISideBarData from "../types/ISideBarData";
 import { FiLogOut } from "react-icons/fi";
 import img from '../assets/images/logo.png'
 import { useLocation, useNavigate} from "react-router";
+import UserContext from "../context/UserContext";
 
 interface SideBarData extends ReactChildType{
   data:ISideBarData[]
 }
 
 const SideBar: FC<SideBarData> = ({ children ,data}) => {
+  const {user,setUser} = useContext(UserContext);
+  const navigate = useNavigate()
+  const [userData,setUserData] = useState({
+    userId:'',
+    userName:''
+  })
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [currentUrlLocation,setCurrentUrlLocation] = useState('');
   const location = useLocation();
@@ -32,8 +39,13 @@ const SideBar: FC<SideBarData> = ({ children ,data}) => {
 
   useEffect(() => {
     setCurrentUrlLocation(location.pathname);
-    
-  }, [location.pathname]);
+    if(user){
+      setUserData({
+        userId:`Employee Id: ${user.empId}`,
+        userName:user.employeeName
+      })
+    }
+  }, [location.pathname, data, user]);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -46,6 +58,11 @@ const SideBar: FC<SideBarData> = ({ children ,data}) => {
   const handleNavigation = (url:string)=>{
     navigation(url)
   }
+  function handleLogout(): void {
+    setUser(null)
+    navigate('/')
+  }
+
   return (
     <div className="">
       <div
@@ -67,7 +84,8 @@ const SideBar: FC<SideBarData> = ({ children ,data}) => {
         </div>
         <div className="flex flex-col items-center space-y-2 p2 text-white">
           <MdAccountCircle className="text-7xl" />
-          <div className="text-md">Abdul Shoyeab Aslam</div>
+          <div className="text-sm">{userData.userId}</div>
+          <div className="text-sm">{userData.userName}</div>
         </div>
         <ul className="flex flex-col space-y-6 lg:text-lg px-4 my-9 text-gray-200/50">
           {
@@ -80,7 +98,7 @@ const SideBar: FC<SideBarData> = ({ children ,data}) => {
           }
            <li className="flex items-center space-x-2 hover:underline hover:text-gray-200 text-sm cursor-pointer w-fit ">
                 <div><FiLogOut/></div>
-                <div>Logout</div>
+                <div onClick={handleLogout}>Logout</div>
               </li>
         </ul>
       </div>

@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { updateRequest } from "../api/LeaveRequestAPI";
 import { EditLeaveRequestType } from "../types/EditLeaveRequestType";
 import { LeaveShift } from "../types/Enum";
@@ -178,13 +179,14 @@ const EditLeaveRequestPopup: FC<EditLeaveRequestType> = ({ setIsUpdatePopup, cur
         const res = await updateRequest(updatedData,currentId)
         if(res.ok){
           console.log('updated..')
+          toast.success('Updated successfully')
           updateLeaveRequestsState(currentId,updatedData);
           setIsUpdatePopup(false)
         }else{
-          console.log("something went wrong")
+          toast.error('Error occured');
         }
       }catch(err){
-        console.log(err)
+        toast.error(`Error occured ${err}`);
       }
 
     }

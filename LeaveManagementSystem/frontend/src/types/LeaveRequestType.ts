@@ -1,7 +1,7 @@
 export interface LeaveType {
     id?:number,
     empId:number,
-    mngId:number,
+    mngId:number | null,
     mngEmail: string,
     fromDate: string,
     toDate: string,
@@ -10,7 +10,7 @@ export interface LeaveType {
     fromLeaveShift: string,
     toLeaveShift: string,
     leaveStatus: 'Pending' | 'Approved' | 'Cancelled',
-    [key:string]:string | number | undefined,
+    [key:string]:string | number | undefined | null,
 }
 
 export interface LeaveRequestType{
