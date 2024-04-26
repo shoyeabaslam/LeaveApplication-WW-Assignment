@@ -14,7 +14,7 @@ namespace backend
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            //pass the leavemanagementcontext so that you can get all the models saved
+            
             builder.Services.AddDbContext<LeavemanagementsystemContext>(options =>
             {
                 options.UseSqlServer("Data Source=DESKTOP-PCUNCE6;database=leavemanagementsystem;Integrated Security=True; Trust Server Certificate=True");
@@ -26,6 +26,10 @@ namespace backend
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
             app.UseHttpsRedirection();
 

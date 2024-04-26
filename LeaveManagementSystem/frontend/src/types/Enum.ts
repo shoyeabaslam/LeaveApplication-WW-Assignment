@@ -14,3 +14,8 @@ export enum SortingTypes{
     ToDates,
     TotalDays
 }
+
+export enum LeaveShift  {
+    FirstHalf ='FirstHalf',
+    SecondHalf = 'SecondHalf'
+}

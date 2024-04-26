@@ -1,14 +1,20 @@
-import { FormEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { FormEvent, useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import InputField from '../../components/InputField';
+import { mangerLogin } from '../../api/Auth';
+import { toast } from 'react-toastify';
+import UserContext from '../../context/UserContext';
 
 const LoginPage = () => {
+ const {setUser} = useContext(UserContext);
+ const navigate = useNavigate();
  const [formData,setFormData] = useState(
   {
     email:'',
     password:''
   }
  )
+
  const handleChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
   const { name, value } = e.target;
   setFormData({
@@ -18,9 +24,25 @@ const LoginPage = () => {
 }
 
 
-  const handleSubmit = (e:FormEvent) => {
+  const handleSubmit = async (e:FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    try{
+      const res = await mangerLogin(formData)
+      if(res.ok){
+        const data = await res.json()
+        setUser({
+          ...data,
+          isManager:true
+        })
+        toast.success('Login successfull');
+        navigate('/view-leaves')
+      }else{
+        toast.error('Invalid Credential')
+      }
+    }catch(err){
+      console.log(err)
+    }
+    
   };
 
   return (

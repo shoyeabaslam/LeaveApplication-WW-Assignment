@@ -5,13 +5,15 @@ namespace backend.Models;
 
 public partial class Manager
 {
-    public int MId { get; set; }
+    public string MngEmail { get; set; } = null!;
 
-    public string MName { get; set; } = null!;
+    public string? MngName { get; set; }
 
-    public string MEmail { get; set; } = null!;
+    public string? MngPhone { get; set; }
 
-    public string MPass { get; set; } = null!;
+    public string? MngPassword { get; set; }
 
-    public bool? Isadmin { get; set; }
+    public bool? IsAdmin { get; set; }
+
+    public virtual ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
 }

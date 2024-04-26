@@ -5,5 +5,6 @@ export default interface InputFieldType {
     type:string,
     isReadOnly?:boolean,
     isAutoFocus?:boolean,
-    placeholder:string
+    placeholder:string,
+    isEmpty?:boolean
 }

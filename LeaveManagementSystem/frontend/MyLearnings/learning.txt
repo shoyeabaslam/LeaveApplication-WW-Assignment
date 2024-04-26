@@ -1,0 +1,19 @@
+const isFormFieldsValid = ()=>{
+        const { managerEmail, fromDate, toDate, reasonForLeave } = formData;
+        const isEmpty = (value: string) => value.trim() === '';
+        
+        const isValid = {
+            managerEmail: !isEmpty(managerEmail),
+            fromDate: !isEmpty(fromDate),
+            toDate: !isEmpty(toDate),
+            reasonForLeave: !isEmpty(reasonForLeave)
+        };
+    
+        setIsFieldsEmpty(isValid);
+    
+        // Check if all fields are valid
+        return Object.values(isValid).every(value => value);
+}
+
+
+1. validation for the dates is completed fromdate and todate act accordingly

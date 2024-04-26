@@ -1,17 +1,23 @@
 export interface LeaveType {
-    managerId: string,
-    managerName: string,
+    id?:number,
+    empId:number,
+    mngId:number | null,
+    mngEmail: string,
     fromDate: string,
     toDate: string,
     totalDays: string,
     reasonForLeave:string,
-    status: 'Pending' | 'Approved' | 'Cancelled'
+    fromLeaveShift: string,
+    toLeaveShift: string,
+    leaveStatus: 'Pending' | 'Approved' | 'Cancelled',
+    [key:string]:string | number | undefined | null,
 }
 
 export interface LeaveRequestType{
     leaveRequests: LeaveType[],
-    handleCancleLeaveRequest: () => void,
-    handleUpdateLeaveRequest: () => void,
+    handleCancleLeaveRequest: (id:number) => void,
+    handleUpdateLeaveRequest: (id:number) => void,
+    handleApproval:(id:number)=>void,   
     setLeaveRequest:React.Dispatch<React.SetStateAction<LeaveType[]>>
     currentStatus: string,
     searchTerms:string,

@@ -1,1 +1,1 @@
-export const StatusData = ['Pending', 'Approved', 'Cancelled']
+export const StatusData = ['All','Pending', 'Approved', 'Cancelled']

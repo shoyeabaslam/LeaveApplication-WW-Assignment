@@ -7,6 +7,9 @@ import LoginPage from './pages/LoginPage/LoginPage.tsx'
 import LeaveApplicationForm from './pages/LeaveApplicationForm/LeaveApplicationForm.tsx'
 import ManagementLogin from './pages/ManagementLogin/ManagementLogin.tsx'
 import ViewLeaveRequests from './pages/ViewLeaveRequests/ViewLeaveRequests.tsx'
+import UserProvider from './context/UserProvider.tsx'
+import { ToastContainer } from 'react-toastify'
+import ManagerDashboard from './pages/ManagementDashboard/ManagementDashboard.tsx'
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -15,12 +18,27 @@ const routes = createBrowserRouter(
       <Route path='management-login' element={<ManagementLogin/>}/>
       <Route path='leave-application' element={<LeaveApplicationForm/>}/>
       <Route path='view-leaves' element={<ViewLeaveRequests/>}/>
+      <Route path='manager-dashboard' element={<ManagerDashboard/>}/>
     </Route>
   )
 )
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={routes}/>
+    <UserProvider>
+    <ToastContainer
+          position="top-right"
+          autoClose={1500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover={false}
+          theme="colored"
+        />
+      <RouterProvider router={routes}/>
+    </UserProvider>
   </React.StrictMode>,
 )
