@@ -1,9 +1,9 @@
 import { FaRegEdit, FaSort } from "react-icons/fa";
-import { MdCancelPresentation } from "react-icons/md";
+import { MdCancelPresentation, MdDone } from "react-icons/md";
 import { SortingTypes, Status } from '../types/Enum'
-import { FC, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { LeaveRequestType, LeaveType } from "../types/LeaveRequestType";
-
+import UserContext from "../context/UserContext";
 const colors = {
     'Pending': 'text-orange-500',
     'Approved': 'text-green-500',
@@ -11,10 +11,23 @@ const colors = {
 
 }
 
-const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleCancleLeaveRequest, handleUpdateLeaveRequest, currentStatus, searchTerms,setLeaveRequest }) => {
+const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleCancleLeaveRequest, handleUpdateLeaveRequest, currentStatus, searchTerms,setLeaveRequest ,handleApproval}) => {
     const [isFromSorting,setIsFromSorting] = useState(false);
     const [isToSorting,setIsToSorting] = useState(false);
     const [isTotalDaysSorting,setIsTotalDaysSorting] = useState(false)
+    const {user} = useContext(UserContext);
+    const [tableHeader,setTableHeader] = useState<string>()
+    useEffect(()=>{
+        if(user){
+            if(user.isManager){
+                setTableHeader('Employee Id')
+            }else{
+                setTableHeader('Manager Id');
+            }
+        }
+    },[user])
+
+
 
     //filtering the data
     const filterLeaveRequests = leaveRequests.filter((item) => {
@@ -84,7 +97,7 @@ const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleC
         <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
             <thead className="bg-gray-50">
                 <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">Manager Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">{tableHeader}</th>
                     <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">
                         <div className="flex items-center space-x-2">
                             <div>From Date</div>
@@ -116,6 +129,8 @@ const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleC
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.totalDays}</td>
                         <td className="px-6 py-4 text-left text-xs font-medium">{request.reasonForLeave}</td>
 
+                        {
+                            user && !user.isManager ?
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap flex justify-between items-center w-[150px]">
                             <div className={`${colors[request.leaveStatus]}`}>
                                 {request.leaveStatus}
@@ -135,7 +150,28 @@ const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleC
 
                                 </div>
                             }
-                        </td>
+                        </td> :
+                        <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap flex justify-between items-center w-[150px]">
+                        <div className={`${colors[request.leaveStatus]}`}>
+                            {request.leaveStatus}
+                        </div>
+                        {
+                            request.leaveStatus === Status.Approved &&
+                            <div className='flex flex-col space-y-3 justify-center'>
+                                <MdCancelPresentation className='text-rose-500 cursor-pointer text-lg' onClick={()=>handleCancleLeaveRequest(request.id!)} />
+                               
+                            </div>
+                        }
+                        {
+                            request.leaveStatus === Status.Pending &&
+                            <div className='flex flex-col space-y-3 justify-center'>
+                                    <MdCancelPresentation className='text-rose-500 cursor-pointer text-lg' onClick={()=>handleCancleLeaveRequest(request.id!)} />
+                                    <MdDone className='text-green-600 hover:text-white hover:rounded-sm hover:bg-green-600  cursor-pointer text-lg' onClick={()=>handleApproval(request.id!)} />
+
+                            </div>
+                        }
+                    </td>
+                    }
                     </tr>
                 ))}
             </tbody>

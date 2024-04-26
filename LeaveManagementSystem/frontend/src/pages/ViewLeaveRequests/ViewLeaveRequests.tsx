@@ -7,10 +7,13 @@ import RenderLeaveRequestsTable from '../../components/RenderLeaveRequestsTable'
 import { StatusData } from '../../utils/DataArray'
 import { ColorsType } from '../../types/ColorsType';
 import { Status } from '../../types/Enum';
-import { getLeaveRequest } from '../../api/LeaveRequestAPI';
+import { getLeaveRequest, getLeaveRequestByMngId, updateRequest } from '../../api/LeaveRequestAPI';
 import { LeaveType } from '../../types/LeaveRequestType';
 import UserContext from '../../context/UserContext';
 import InvalidPage from '../../components/InvalidPage';
+import { ManagerSideBarData } from '../../utils/SideBarModels/ManagerData';
+import ISideBarData from '../../types/ISideBarData';
+import { toast } from 'react-toastify';
 
 
 const colors: ColorsType = {
@@ -35,6 +38,8 @@ const ViewLeaveRequests = () => {
   const [isUpdatePopup, setIsUpdatePopup] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('All');
   const [searchTerms, setSearchTerms] = useState('');
+  const [sideBarData,setSideBarData] = useState<ISideBarData[]>([]);
+  const [dashboardHeading,setDashboardHeading] = useState<string>('')
   const [statusLength, setStatusLength] = useState<StatusLengthType>({
     All: '',
     Approved: '',
@@ -45,20 +50,51 @@ const ViewLeaveRequests = () => {
   const [currentId, setCurrentId] = useState<number>();
   //to fetch the data
 
+
+  useEffect(()=>{
+    if(user){
+      console.log(user)
+      if(user.isManager){
+        setSideBarData(ManagerSideBarData)
+        setDashboardHeading('Leave Approval Dashboard')
+      }else{
+        setSideBarData(LeaveApplicationData);
+        setDashboardHeading('Leave Request Dashboard')
+      }
+    }
+  },[user])
+
   useEffect(() => {
     async function data() {
-      if (user) {
-        try {
-          const res = await getLeaveRequest(user?.empId);
-          if (res.ok) {
-            const data: LeaveType[] = await res.json()
-            setLeaveRequest(data)
+      if (user) 
+      {
+        if(user.isManager){
+          // get the employess details relted to manager
+          try {
+            const res = await getLeaveRequestByMngId(user.empId);
+            if (res.ok) {
+              const data: LeaveType[] = await res.json()
+              setLeaveRequest(data)
+            }
+            else {
+              console.log('No data found!!!')
+            }
+          } catch (err) {
+            console.log(err)
           }
-          else {
-            console.log('No data found!!!')
+        }else{
+          try {
+            const res = await getLeaveRequest(user?.empId);
+            if (res.ok) {
+              const data: LeaveType[] = await res.json()
+              setLeaveRequest(data)
+            }
+            else {
+              console.log('No data found!!!')
+            }
+          } catch (err) {
+            console.log(err)
           }
-        } catch (err) {
-          console.log(err)
         }
       }
     }
@@ -90,14 +126,56 @@ const ViewLeaveRequests = () => {
   }
 
 
+  const updateLeaveStatus = (id: number, newStatus: 'Pending' | 'Approved' | 'Cancelled') => {
+    const index = leaveRequests.findIndex(request => request.id === id);
+    if (index !== -1) {
+      const updatedLeaveRequests = [...leaveRequests];
+
+      // Update the leave status of the found leave request
+      updatedLeaveRequests[index] = {
+        ...updatedLeaveRequests[index],
+        leaveStatus: newStatus
+      };
+
+      // Set the updated array using setLeaveRequest
+      setLeaveRequest(updatedLeaveRequests);
+    } else {
+      console.error(`Leave request with ID ${id} not found.`);
+    }
+  };
+
+  async function handleApproval(id:number){
+    const data = leaveRequests.filter((lr) => lr.id === id)[0]
+    if (data) {
+      const res = await updateRequest({
+        ...data,
+        leaveStatus: Status.Approved
+      }, id)
+      try {
+        if (res.ok) {
+          toast.success('Approved successfully')
+          updateLeaveStatus(id, Status.Approved)
+        }
+        else {
+          console.log('something went wrong')
+          toast.error('Error occured')
+        }
+      } catch (err) {
+        toast.error(`Error occured ${err}`)
+
+      }
+    }
+  }
+ 
+
 
   if (user) {
     return (
-      <SideBar data={LeaveApplicationData}>
+      <SideBar data={sideBarData}>
         <div className="container mx-auto px-4 py-8">
           {isCancelPopUp && <CancelPopUp setIsCancelPopup={setIsCancelPopup} currentId={currentId!} leaveRequests={leaveRequests} setLeaveRequest={setLeaveRequest} />}
           {isUpdatePopup && <EditLeaveRequestPopup setIsUpdatePopup={setIsUpdatePopup} currentId={currentId!} leaveRequests={leaveRequests} setLeaveRequest={setLeaveRequest} />}
-          <h1 className="text-3xl font-semibold text-gray-800 mb-8">Leave Request Dashboard</h1>
+          <h1 className="text-3xl font-semibold text-gray-800 mb-8">{dashboardHeading}</h1>
           <div className='my-4 flex space-x-5'>
             <div>
               <input type='text' value={searchTerms} className='px-2 border outline-none rounded-lg py-1' placeholder='search...' onChange={(e) => setSearchTerms(e.target.value)} />
@@ -127,7 +205,7 @@ const ViewLeaveRequests = () => {
                   currentStatus={currentStatus}
                   searchTerms={searchTerms}
                   setLeaveRequest={setLeaveRequest}
-
+                  handleApproval={handleApproval}
                 />
               )
           }

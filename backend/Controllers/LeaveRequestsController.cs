@@ -44,6 +44,24 @@ namespace backend.Controllers
             return leaveRequest;
         }
 
+        // GET: api/LeaveRequests/5
+        [HttpGet("Manager/{mngId}")]
+        public async Task<ActionResult<IEnumerable<LeaveRequest>>> GetLeaveRequestByMngId(int mngId)
+        {
+            var leaveRequest = await _context.LeaveRequests
+                        .Where(lr => lr.MngId == mngId)
+                        .OrderByDescending(lr => lr.CreatedAt)
+                        .ToArrayAsync();
+
+            if (leaveRequest == null)
+            {
+                return NotFound();
+            }
+
+            return leaveRequest;
+        }
+
+
         // PUT: api/LeaveRequests/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

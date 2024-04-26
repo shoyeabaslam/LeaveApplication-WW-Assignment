@@ -105,7 +105,27 @@ namespace backend.Controllers
 
         }
 
-       
+        [Route("/ManagerLogin")]
+        [HttpPost]
+        public async Task<ActionResult<Employee>> ManagerLogin(UserLogin logger)
+        {
+            var user = await _context.Employees.FirstOrDefaultAsync(u=>u.EmployeeEmail == logger.email);
+            if(user == null)
+            {
+                return NotFound("User Not Found");
+            }
+            var manager = await _context.Employees.FirstOrDefaultAsync(mng => mng.ManagerId == user.EmpId);
+            if(manager == null)
+            {
+                return NotFound("User Not Found");
+            }
+            if(user.EmployeePassword != logger.password)
+            {
+                return Unauthorized("Invalid Login Details");
+            }
+
+            return Ok(user);
+        }
 
         private bool EmployeeExists(int id)
         {
