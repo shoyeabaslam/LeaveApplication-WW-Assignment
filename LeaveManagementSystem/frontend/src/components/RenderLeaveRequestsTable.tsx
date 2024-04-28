@@ -4,6 +4,7 @@ import { SortingTypes, Status } from '../types/Enum'
 import { FC, useContext, useEffect, useState } from "react";
 import { LeaveRequestType, LeaveType } from "../types/LeaveRequestType";
 import UserContext from "../context/UserContext";
+import { IoIosEye } from "react-icons/io";
 const colors = {
     'Pending': 'text-orange-500',
     'Approved': 'text-green-500',
@@ -11,7 +12,7 @@ const colors = {
 
 }
 
-const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleCancleLeaveRequest, handleUpdateLeaveRequest, currentStatus, searchTerms,setLeaveRequest ,handleApproval}) => {
+const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleCancleLeaveRequest, handleUpdateLeaveRequest, currentStatus, searchTerms,setLeaveRequest ,handleApproval,handleEmployeeViewDetails}) => {
     const [isFromSorting,setIsFromSorting] = useState(false);
     const [isToSorting,setIsToSorting] = useState(false);
     const [isTotalDaysSorting,setIsTotalDaysSorting] = useState(false)
@@ -22,7 +23,7 @@ const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleC
             if(user.isManager){
                 setTableHeader('Employee Id')
             }else{
-                setTableHeader('Manager Id');
+                setTableHeader('Manager Email');
             }
         }
     },[user])
@@ -94,7 +95,7 @@ const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleC
     }
    
     return (
-        <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
                 <tr>
                     <th className="px-6 py-3 text-left text-xs font-semibold  uppercase tracking-wider">{tableHeader}</th>
@@ -123,7 +124,13 @@ const RenderLeaveRequestsTable: FC<LeaveRequestType> = ({ leaveRequests, handleC
             <tbody className="bg-white divide-y divide-gray-200">
                 {filterLeaveRequests.map((request, index) => (
                     <tr key={index}>
-                        <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.mngEmail}</td>
+                        {
+                            user && user.isManager ? <td className="px-6 flex items-center space-x-2 py-4 text-left text-xs font-medium whitespace-nowrap">
+                                <span className="text-blue-400 text-lg hover:text-blue-600 cursor-pointer" onClick={()=>handleEmployeeViewDetails(request.empId)}><IoIosEye/></span>
+                                <span>{request.empId}</span>
+                            </td> :
+                            <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.mngEmail}</td>
+                        }
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.fromDate}</td>
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.toDate}</td>
                         <td className="px-6 py-4 text-left text-xs font-medium whitespace-nowrap">{request.totalDays}</td>

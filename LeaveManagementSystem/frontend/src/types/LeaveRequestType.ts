@@ -18,6 +18,7 @@ export interface LeaveRequestType{
     handleCancleLeaveRequest: (id:number) => void,
     handleUpdateLeaveRequest: (id:number) => void,
     handleApproval:(id:number)=>void,   
+    handleEmployeeViewDetails:(empId:number)=>void,
     setLeaveRequest:React.Dispatch<React.SetStateAction<LeaveType[]>>
     currentStatus: string,
     searchTerms:string,

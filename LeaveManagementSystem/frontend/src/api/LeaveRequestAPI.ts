@@ -1,6 +1,7 @@
 import { LeaveType } from "../types/LeaveRequestType";
 
-const BASE_URL = 'https://localhost:7231/api/LeaveRequests';
+// const BASE_URL = 'https://localhost:7231/api/LeaveRequests';
+const BASE_URL = 'http://localhost:5106/api/LeaveRequests';
 // const PC_URL = 'http://localhost:5106/api/LeaveRequests'
 export async function postLeaveRequest(body: LeaveType) {
     console.log(body)

@@ -66,7 +66,7 @@ const SideBar: FC<SideBarData> = ({ children ,data}) => {
   return (
     <div className="">
       <div
-        className={`fixed z-30 top-0 left-0 bottom-0 w-[200px] bg-SidebarBg backdrop-blur-sm ${
+        className={`fixed z-30 top-0 left-0 bottom-0 w-[200px] bg-slate-800 backdrop-blur-sm ${
           window.innerWidth < 1024 && `transition-transform ${
             isDrawerOpen ? "translate-x-0" : "-translate-x-[200px]"
           }`
@@ -102,14 +102,19 @@ const SideBar: FC<SideBarData> = ({ children ,data}) => {
               </li>
         </ul>
       </div>
-      <div className="bg-gray-100/90 fixed top-0 left-0 w-full  shadow-md py-2 flex space-x-2 items-center">
+      <div style={{backgroundImage:'linear-gradient(45deg, #f0f0f0, rgb(237, 242, 255))'}}
+       className=" fixed top-0 left-0 w-full  shadow-md py-2 flex space-x-2 items-center">
         <h4
-          className="px-2 md:px-3 h-10 lg:px-5 flex items-center cursor-pointer text-2xl text-sideBarBgColor"
+          
+          className="px-2 md:px-3 h-10 lg:px-5 flex items-center cursor-pointer text-2xl"
           onClick={toggleDrawer}
         >
           {!isDrawerOpen && <GiHamburgerMenu />}
         </h4>
         <img className="h-6 lg:pl-[160px]" src={img}/>
+        <div className="w-full flex items-center justify-center">
+          <h3 className=" sm:text-xl font-bold md:mr-36  text-slate-950">Leave Management</h3>
+        </div>
       </div>
       <div className="lg:ml-[200px] px-2 md:px-3 lg:px-5 py-10">{children}</div>
     </div>

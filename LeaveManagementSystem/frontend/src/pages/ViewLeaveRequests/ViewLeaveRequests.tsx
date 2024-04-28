@@ -14,6 +14,7 @@ import InvalidPage from '../../components/InvalidPage';
 import { ManagerSideBarData } from '../../utils/SideBarModels/ManagerData';
 import ISideBarData from '../../types/ISideBarData';
 import { toast } from 'react-toastify';
+import ViewEmployeeDetails from '../../components/ViewEmployeeDetails';
 
 
 const colors: ColorsType = {
@@ -46,7 +47,8 @@ const ViewLeaveRequests = () => {
     Cancelled: '',
     Pending: ''
   })
-
+  const [isView,setIsView] = useState(false);
+  const [currentEmpId,setCurrentEmpId] = useState(0);
   const [currentId, setCurrentId] = useState<number>();
   //to fetch the data
 
@@ -125,6 +127,11 @@ const ViewLeaveRequests = () => {
     setCurrentStatus(status)
   }
 
+  const handleEmployeeViewDetails = (empId:number)=>{
+    setIsView(prev=>!prev);
+    setCurrentEmpId(empId)
+  }
+
 
   const updateLeaveStatus = (id: number, newStatus: 'Pending' | 'Approved' | 'Cancelled') => {
     const index = leaveRequests.findIndex(request => request.id === id);
@@ -172,7 +179,8 @@ const ViewLeaveRequests = () => {
   if (user) {
     return (
       <SideBar data={sideBarData}>
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 overflow-x-scroll min-h-screen">
+          {isView && <ViewEmployeeDetails empId={currentEmpId} setIsView={setIsView}/>}
           {isCancelPopUp && <CancelPopUp setIsCancelPopup={setIsCancelPopup} currentId={currentId!} leaveRequests={leaveRequests} setLeaveRequest={setLeaveRequest} />}
           {isUpdatePopup && <EditLeaveRequestPopup setIsUpdatePopup={setIsUpdatePopup} currentId={currentId!} leaveRequests={leaveRequests} setLeaveRequest={setLeaveRequest} />}
           <h1 className="text-3xl font-semibold text-gray-800 mb-8">{dashboardHeading}</h1>
@@ -206,6 +214,7 @@ const ViewLeaveRequests = () => {
                   searchTerms={searchTerms}
                   setLeaveRequest={setLeaveRequest}
                   handleApproval={handleApproval}
+                  handleEmployeeViewDetails={handleEmployeeViewDetails}
                 />
               )
           }

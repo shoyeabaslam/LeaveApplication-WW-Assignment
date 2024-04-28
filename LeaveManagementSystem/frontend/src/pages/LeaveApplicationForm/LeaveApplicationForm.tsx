@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router';
 import UserContext from '../../context/UserContext';
 import { toast } from 'react-toastify';
 import InvalidPage from '../../components/InvalidPage';
+import { getEmployeeById } from '../../api/EmployeeAPI';
 
 
 const LeaveApplicationForm = () => {
@@ -26,16 +27,33 @@ const LeaveApplicationForm = () => {
   const navigate = useNavigate();
   
   useEffect(()=>{
-    if(user){
-      const intialFormData = {
-        ...formData,
-        empId:user.empId.toString(),
-        empEmail:user.employeeEmail,
-        empPhone:user.employeePhone
+    const addData = async ()=>{
+      if(user){
+        try{
+          const res = await getEmployeeById(user.managerId);
+          if(res.ok){
+            const resData = await res.json();
+            setFormData((prev)=>{
+              const data = {
+                ...prev,
+                empId:user.empId.toString(),
+                empEmail:user.employeeEmail,
+                empPhone:user.employeePhone,
+                managerEmail:resData.employeeEmail
+              }
+              return data
+            })
+          }else{
+            console.log('Error in fetching the data')
+          }
+        }catch(err){
+          console.log(err)
+        }
+        
       }
-      setFormData(intialFormData)
     }
-  },[formData, user])
+    addData()
+  },[user])
 
   const [radioButton,setRadioButton] = useState({
     fromDate:{
